@@ -16,7 +16,6 @@ import { User } from './users/entities/user.entity.js';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public'),
-      exclude: ['/api*'],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
