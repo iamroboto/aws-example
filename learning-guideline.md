@@ -1110,3 +1110,29 @@ EC2
 và tiếp tục từng phase cho đến architecture hoàn chỉnh.
 
 AI phải đóng vai mentor và **chỉ dẫn từng bước, chờ tôi hoàn thành bước hiện tại trước khi chuyển sang bước tiếp theo.**
+
+
+sg-026e508ac31b39fc8 - aws-example-alb-sg
+Downloads/aws-example-key.pem
+
+VPC
+6 subnet:
+- 2 public
+- 4 private
+for 2 AZs
+
+
+IAM:
+- AWSBackenDemoRole
+
+
+EC2:
+- in VPC
+- public subnet
+- IAM: AWSBackenDemoRole
+- create keypair for SSH
+- security group for BE
+
+Bên trong EC2:
+- cài docker
+
