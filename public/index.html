@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS Backend Interview System - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --accent: #818cf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --success: #34d399;
+      --danger: #f87171;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top left, #1e1b4b, var(--bg-color));
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: #0f172a;
+      font-weight: 600;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: transform 0.1s ease, opacity 0.2s ease;
+      font-size: 0.95rem;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      margin-top: 0.5rem;
+    }
+
+    .user-list {
+      margin-top: 1rem;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .user-item {
+      padding: 0.75rem;
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .user-info div:first-child {
+      font-weight: 600;
+    }
+
+    .user-info div:last-child {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      margin-top: 0.75rem;
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--success);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .status-msg {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      word-break: break-all;
+    }
+
+    .status-msg.success { color: var(--success); }
+    .status-msg.error { color: var(--danger); }
+
+    .file-link {
+      display: inline-block;
+      margin-top: 0.5rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+
+    .file-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AWS Backend Interview System</h1>
+      <p>Interactive Control Panel for Users API & Direct S3 Presigned Uploads</p>
+    </header>
+
+    <div class="grid">
+      <!-- User Management Card -->
+      <div class="card">
+        <h2>👤 User Management (PostgreSQL)</h2>
+        <form id="userForm">
+          <div class="form-group">
+            <label for="userName">Full Name</label>
+            <input type="text" id="userName" class="form-control" placeholder="John Doe" required>
+          </div>
+          <div class="form-group">
+            <label for="userEmail">Email Address</label>
+            <input type="email" id="userEmail" class="form-control" placeholder="john@example.com" required>
+          </div>
+          <button type="submit" class="btn">Create User</button>
+        </form>
+
+        <button id="loadUsersBtn" class="btn btn-secondary">Refresh User List</button>
+
+        <div id="userStatus" class="status-msg"></div>
+        <div id="userList" class="user-list"></div>
+      </div>
+
+      <!-- File Upload Card -->
+      <div class="card">
+        <h2>📁 Direct S3 Presigned Upload</h2>
+        <form id="uploadForm">
+          <div class="form-group">
+            <label for="fileInput">Choose File to Upload</label>
+            <input type="file" id="fileInput" class="form-control" required>
+          </div>
+          <button type="submit" class="btn">Upload Directly to S3</button>
+        </form>
+
+        <div id="progressBar" class="progress-bar">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+
+        <div id="uploadStatus" class="status-msg"></div>
+        <div id="fileDownloadArea"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // USER MANAGEMENT
+    const userForm = document.getElementById('userForm');
+    const userList = document.getElementById('userList');
+    const userStatus = document.getElementById('userStatus');
+    const loadUsersBtn = document.getElementById('loadUsersBtn');
+
+    async function fetchUsers() {
+      try {
+        const res = await fetch('/users');
+        const users = await res.json();
+        userList.innerHTML = users.map(u => `
+          <div class="user-item">
+            <div class="user-info">
+              <div>${u.name}</div>
+              <div>${u.email}</div>
+            </div>
+            <button onclick="deleteUser('${u.id}')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:0.8rem">Delete</button>
+          </div>
+        `).join('');
+      } catch (err) {
+        userStatus.className = 'status-msg error';
+        userStatus.innerText = 'Failed to load users';
+      }
+    }
+
+    userForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('userName').value;
+      const email = document.getElementById('userEmail').value;
+
+      try {
+        const res = await fetch('/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email })
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.message || 'Create failed');
+        }
+
+        userStatus.className = 'status-msg success';
+        userStatus.innerText = 'User created successfully!';
+        userForm.reset();
+        fetchUsers();
+      } catch (err) {
+        userStatus.className = 'status-msg error';
+        userStatus.innerText = err.message;
+      }
+    });
+
+    async function deleteUser(id) {
+      if (!confirm('Are you sure?')) return;
+      try {
+        await fetch(`/users/${id}`, { method: 'DELETE' });
+        fetchUsers();
+      } catch (err) {
+        alert('Failed to delete user');
+      }
+    }
+
+    loadUsersBtn.addEventListener('click', fetchUsers);
+    fetchUsers();
+
+    // S3 PRESIGNED UPLOAD
+    const uploadForm = document.getElementById('uploadForm');
+    const fileInput = document.getElementById('fileInput');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    const fileDownloadArea = document.getElementById('fileDownloadArea');
+
+    uploadForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      uploadStatus.className = 'status-msg';
+      uploadStatus.innerText = '1. Requesting Presigned URL from Backend...';
+      progressBar.style.display = 'block';
+      progressFill.style.width = '20%';
+      fileDownloadArea.innerHTML = '';
+
+      try {
+        // Step 1: Request Presigned URL from NestJS Backend
+        const presignedRes = await fetch('/files/presigned-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename: file.name,
+            contentType: file.type || 'application/octet-stream'
+          })
+        });
+
+        if (!presignedRes.ok) throw new Error('Failed to get presigned URL');
+        const { uploadUrl, objectKey } = await presignedRes.json();
+
+        uploadStatus.innerText = '2. Uploading file directly to AWS S3 Bucket...';
+        progressFill.style.width = '60%';
+
+        // Step 2: Upload File DIRECTLY to AWS S3 Bucket via PUT
+        const uploadRes = await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': file.type || 'application/octet-stream'
+          },
+          body: file
+        });
+
+        if (!uploadRes.ok) throw new Error('Direct upload to S3 failed');
+
+        progressFill.style.width = '100%';
+        uploadStatus.className = 'status-msg success';
+        uploadStatus.innerText = '🎉 Upload to S3 Successful!';
+
+        // Step 3: Fetch Presigned Download URL
+        const downloadRes = await fetch(`/files/download-url?key=${encodeURIComponent(objectKey)}`);
+        const { downloadUrl } = await downloadRes.json();
+
+        fileDownloadArea.innerHTML = `
+          <a href="${downloadUrl}" target="_blank" class="file-link">
+            📥 Download / View Uploaded File (${file.name})
+          </a>
+        `;
+
+        uploadForm.reset();
+      } catch (err) {
+        progressFill.style.background = 'var(--danger)';
+        uploadStatus.className = 'status-msg error';
+        uploadStatus.innerText = 'Error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
