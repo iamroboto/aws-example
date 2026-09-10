@@ -1135,3 +1135,40 @@ EC2:
 
 Bên trong EC2:
 - cài docker
+- clone source code
+
+
+Security Group:
+- thường thao tác với inbound rules
+
+
+s3:
+
+
+IAM
+- role: AWSBackendDemoRole has AWSBackendS3AccessPolicy
+
+
+
+RDS:
+DbPassW0rd2026
+- tạo và assign subnet group (2 private db subnets)
+- chọn đúng vpc
+- chọn đúng sg
+- Publicly Accessible = No
+! xóa instance và bỏ chọn create final snapshot
+
+
+
+kinh nghiệm quản trị server
+- chỉ cho phép đúng port, đúng IP
+
+
+
+Nhà tuyển dụng hỏi: "NAT Gateway của AWS quá đắt đối với các dự án nhỏ/Startup (tốn 32$/tháng). Bạn có giải pháp nào thay thế để tiết kiệm chi phí mà Private Subnet vẫn ra được Internet không?"
+
+Bạn trả lời: "Dạ có 2 giải pháp:
+
+   Dùng NAT Instance (Tự dựng): Thay vì dùng NAT Gateway dịch vụ của AWS, em tự tạo 1 máy chủ EC2 t3.micro giá rẻ (~8$/tháng hoặc Free Tier) nằm ở Public Subnet, cài iptables biến nó thành NAT Server. Vẫn đạt mục tiêu cửa 1 chiều mà tiết kiệm 75% chi phí!
+
+   VPC Endpoints (S3/DynamoDB Gateway Endpoint): Nếu Backend chỉ cần kết nối tới S3 hoặc DynamoDB của AWS, em dùng VPC Gateway Endpoint (MIỄN PHÍ 100%) thay vì phải đi qua NAT Gateway."*
