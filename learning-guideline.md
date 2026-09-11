@@ -1112,6 +1112,21 @@ và tiếp tục từng phase cho đến architecture hoàn chỉnh.
 AI phải đóng vai mentor và **chỉ dẫn từng bước, chờ tôi hoàn thành bước hiện tại trước khi chuyển sang bước tiếp theo.**
 
 
+COMMANDS:
+ssh -i ~/Downloads/aws-example-key.pem -o IdentitiesOnly=yes ubuntu@3.26.64.20
+
+cat << 'EOF' > .env
+PORT=3000
+DB_HOST=aws-example-database.c3akkwyca51b.ap-southeast-2.rds.amazonaws.com
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=minhson123
+DB_NAME=postgres
+AWS_REGION=ap-southeast-2
+AWS_S3_BUCKET=aws-example-files-bucket
+EOF
+
+
 sg-026e508ac31b39fc8 - aws-example-alb-sg
 Downloads/aws-example-key.pem
 

@@ -21,7 +21,7 @@ export class FilesService {
     );
     this.bucketName = this.configService.get<string>(
       'AWS_S3_BUCKET',
-      'aws-example-files-bucket-sondev2026',
+      'aws-example-files-bucket',
     );
 
     this.s3Client = new S3Client({
@@ -36,9 +36,8 @@ export class FilesService {
       const fileExtension = dto.filename.includes('.')
         ? dto.filename.split('.').pop()
         : '';
-      const objectKey = `uploads/${Date.now()}-${randomUUID()}${
-        fileExtension ? '.' + fileExtension : ''
-      }`;
+      const objectKey = `uploads/${Date.now()}-${randomUUID()}${fileExtension ? '.' + fileExtension : ''
+        }`;
 
       // Flexible PutObjectCommand without enforcing strict ContentType in signature
       const command = new PutObjectCommand({
