@@ -40,10 +40,10 @@ export class FilesService {
         fileExtension ? '.' + fileExtension : ''
       }`;
 
+      // Flexible PutObjectCommand without enforcing strict ContentType in signature
       const command = new PutObjectCommand({
         Bucket: this.bucketName,
         Key: objectKey,
-        ContentType: dto.contentType,
       });
 
       // Expiration time: 15 minutes (900 seconds)
