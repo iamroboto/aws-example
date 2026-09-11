@@ -22,11 +22,10 @@ import { User } from './users/entities/user.entity.js';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const dbHost = configService.get<string>('DB_HOST', 'localhost');
-        const isRemoteAwsRds =
+        const isRemoteDb =
           dbHost &&
           !dbHost.includes('localhost') &&
-          !dbHost.includes('127.0.0.1') &&
-          !dbHost.includes('160.191.243.190');
+          !dbHost.includes('127.0.0.1');
 
         return {
           type: 'postgres',
@@ -39,8 +38,8 @@ import { User } from './users/entities/user.entity.js';
           password: configService.get<string>('DB_PASSWORD', 'postgres'),
           database: configService.get<string>('DB_NAME', 'aws_example'),
           entities: [User],
-          synchronize: true, // Note: synchronize is true for local dev, false for production with migrations
-          ssl: isRemoteAwsRds ? { rejectUnauthorized: false } : false,
+          synchronize: true,
+          ssl: isRemoteDb ? { rejectUnauthorized: false } : false,
         };
       },
     }),

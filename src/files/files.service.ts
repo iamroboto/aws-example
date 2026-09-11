@@ -26,8 +26,6 @@ export class FilesService {
 
     this.s3Client = new S3Client({
       region,
-      requestChecksumCalculation: 'WHEN_REQUIRED',
-      responseChecksumValidation: 'WHEN_REQUIRED',
     });
   }
 
@@ -36,16 +34,16 @@ export class FilesService {
       const fileExtension = dto.filename.includes('.')
         ? dto.filename.split('.').pop()
         : '';
-      const objectKey = `uploads/${Date.now()}-${randomUUID()}${fileExtension ? '.' + fileExtension : ''
-        }`;
+      const objectKey = `uploads/${Date.now()}-${randomUUID()}${
+        fileExtension ? '.' + fileExtension : ''
+      }`;
 
-      // Flexible PutObjectCommand without enforcing strict ContentType in signature
       const command = new PutObjectCommand({
         Bucket: this.bucketName,
         Key: objectKey,
+        ContentType: dto.contentType,
       });
 
-      // Expiration time: 15 minutes (900 seconds)
       const uploadUrl = await getSignedUrl(this.s3Client, command, {
         expiresIn: 900,
       });
@@ -70,7 +68,6 @@ export class FilesService {
         Key: objectKey,
       });
 
-      // Expiration time: 1 hour (3600 seconds)
       const downloadUrl = await getSignedUrl(this.s3Client, command, {
         expiresIn: 3600,
       });
