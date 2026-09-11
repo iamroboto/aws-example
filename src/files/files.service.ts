@@ -26,6 +26,8 @@ export class FilesService {
 
     this.s3Client = new S3Client({
       region,
+      requestChecksumCalculation: 'WHEN_REQUIRED',
+      responseChecksumValidation: 'WHEN_REQUIRED',
     });
   }
 
