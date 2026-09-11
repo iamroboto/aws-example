@@ -1158,6 +1158,7 @@ Security Group:
 
 
 s3:
+- bucket policy, chứ không bị CORS
 
 
 IAM
@@ -1172,6 +1173,11 @@ DbPassW0rd2026
 - chọn đúng sg
 - Publicly Accessible = No
 ! xóa instance và bỏ chọn create final snapshot
+
+
+SQS:
+- create 2 queue
+
 
 
 

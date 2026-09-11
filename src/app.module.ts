@@ -7,6 +7,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { UsersModule } from './users/users.module.js';
 import { FilesModule } from './files/files.module.js';
+import { JobsModule } from './jobs/jobs.module.js';
 import { User } from './users/entities/user.entity.js';
 
 @Module({
@@ -45,6 +46,7 @@ import { User } from './users/entities/user.entity.js';
     }),
     UsersModule,
     FilesModule,
+    JobsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
