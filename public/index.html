@@ -362,9 +362,6 @@
         // Step 2: Upload File DIRECTLY to AWS S3 Bucket via PUT
         const uploadRes = await fetch(uploadUrl, {
           method: 'PUT',
-          headers: {
-            'Content-Type': file.type || 'application/octet-stream'
-          },
           body: file
         });
 
