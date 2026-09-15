@@ -1124,6 +1124,7 @@ DB_PASSWORD=minhson123
 DB_NAME=postgres
 AWS_REGION=ap-southeast-2
 AWS_S3_BUCKET=aws-example-files-bucket
+SQS_QUEUE_URL=https://sqs.ap-southeast-2.amazonaws.com/739795705551/aws-example-job-queue
 EOF
 
 
@@ -1167,13 +1168,45 @@ IAM
 
 
 RDS:
-DbPassW0rd2026
+minhson123
 - tạo và assign subnet group (2 private db subnets)
 - chọn đúng vpc
 - chọn đúng sg
 - Publicly Accessible = No
 ! xóa instance và bỏ chọn create final snapshot
 
+aws rds create-db-instance \
+  --db-instance-identifier aws-example-database \
+  --db-instance-class db.t3.micro \
+  --engine postgres \
+  --allocated-storage 20 \
+  --master-username postgres \
+  --master-user-password minhson123 \
+  --db-name postgres \
+  --db-subnet-group-name aws-example-db-subnet-group \
+  --vpc-security-group-ids sg-05d2cae5ef6e1a4e7 \
+  --no-publicly-accessible \
+  --region ap-southeast-2
+
+
+SNS:
+- select SQS job queue
+- Enable raw message delivery (giúp message gửi sang SQS giữ nguyên JSON sạch).
+- Bổ sung block statement này vào mảng "Statement": [...]: MAYBE NO NEEDED
+{
+  "Sid": "Allow-SNS-SendMessage",
+  "Effect": "Allow",
+  "Principal": {
+    "Service": "sns.amazonaws.com"
+  },
+  "Action": "sqs:SendMessage",
+  "Resource": "arn:aws:sqs:ap-southeast-2:739795705551:aws-example-job-queue",
+  "Condition": {
+    "ArnEquals": {
+      "aws:SourceArn": "arn:aws:sns:ap-southeast-2:739795705551:aws-example-event-topic"
+    }
+  }
+}
 
 SQS:
 - create 2 queue

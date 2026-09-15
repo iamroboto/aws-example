@@ -269,6 +269,26 @@
         </div>
         <div id="jobStatus" class="status-msg"></div>
       </div>
+
+      <!-- SNS Event Fan-out Card -->
+      <div class="card" style="grid-column: span 2;">
+        <h2>📢 AWS SNS Event Fan-out Pattern</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+          Publish sự kiện (Event) lên SNS Topic. SNS sẽ tự động phát sóng (Fan-out) bản sao sự kiện đó sang SQS Queue, và NestJS Worker sẽ tự nhặt sự kiện từ SQS về xử lý!
+        </p>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <select id="snsEventType" class="form-control" style="width: 220px;">
+            <option value="USER_REGISTERED">USER_REGISTERED</option>
+            <option value="FILE_UPLOADED">FILE_UPLOADED</option>
+            <option value="ORDER_CREATED">ORDER_CREATED</option>
+          </select>
+          <input type="text" id="snsPayload" class="form-control" placeholder='Payload JSON (e.g. {"userId": 99})' value='{"userId": 99, "email": "dev@example.com"}'>
+          <button type="button" class="btn" style="width: auto; padding: 0.75rem 1.5rem; white-space: nowrap;" onclick="publishSnsEvent()">
+            Publish Event to SNS
+          </button>
+        </div>
+        <div id="snsStatus" class="status-msg"></div>
+      </div>
     </div>
   </div>
 
@@ -426,6 +446,36 @@
       } catch (err) {
         statusDiv.className = 'status-msg error';
         statusDiv.innerHTML = '❌ Failed to push job: ' + err.message;
+      }
+    }
+
+    // SNS EVENT PUBLISHING
+    async function publishSnsEvent() {
+      const eventType = document.getElementById('snsEventType').value;
+      const rawPayload = document.getElementById('snsPayload').value;
+      const statusDiv = document.getElementById('snsStatus');
+      statusDiv.className = 'status-msg';
+      statusDiv.innerHTML = '⏳ Publishing event to AWS SNS Topic...';
+
+      let payload;
+      try {
+        payload = JSON.parse(rawPayload);
+      } catch (e) {
+        payload = { raw: rawPayload };
+      }
+
+      try {
+        const res = await fetch('/events/publish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ eventType, payload }),
+        });
+        const data = await res.json();
+        statusDiv.className = 'status-msg success';
+        statusDiv.innerHTML = `📢 Event Published to SNS! Message ID: <strong>${data.messageId}</strong>.<br>📡 SNS automatically fanned-out this event to SQS Queue. Watch server logs to see Worker processing it!`;
+      } catch (err) {
+        statusDiv.className = 'status-msg error';
+        statusDiv.innerHTML = '❌ Failed to publish event: ' + err.message;
       }
     }
   </script>
